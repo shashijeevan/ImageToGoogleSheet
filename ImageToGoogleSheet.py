@@ -111,11 +111,15 @@ class ImageToGoogleSheet:
             'requests': requests
         }
 
+        print("Adding new Sheet")
+
         addsheetresponse = service.spreadsheets().batchUpdate(
                                     spreadsheetId=self.SPREADSHEET_ID, 
                                     body=body).execute()
 
-        pprint(addsheetresponse)
+        #pprint(addsheetresponse)
+
+        print("Added new Sheet")
 
         self.sheetID = addsheetresponse['replies'][0]['addSheet']['properties']['sheetId']
 
@@ -141,11 +145,15 @@ class ImageToGoogleSheet:
             'requests': requests
         }
 
+        print("Setting square cells")
+
         setwidthresponse = service.spreadsheets().batchUpdate(
                                     spreadsheetId=self.SPREADSHEET_ID, 
                                     body=body).execute()
 
-        pprint(setwidthresponse)
+        #pprint(setwidthresponse)
+
+        print("Setup of square cell is complete")
 
     def __SaveImageArrayToGSheet(self):
 
@@ -161,6 +169,9 @@ class ImageToGoogleSheet:
         service = self.__SetupProxy(creds, UseProxy)
 
         #Generating the JSON using the Image data
+
+        print("Building the request JSON from image pixel data")
+
         requestSON = RequestBuilder.ImageArrayToJSON(self.sheetID, self.image_array, 
                                                      self.width, self.height)
 
@@ -177,8 +188,9 @@ class ImageToGoogleSheet:
         response = service.spreadsheets().batchUpdate(spreadsheetId=self.SPREADSHEET_ID,
                                                       body=request).execute()
 
-        print("Executed Batch Update")
-        print(response)
+        print("Executed batch update")
+
+        #print(response)
 
     def SaveImageToGoogleSheet(self, imagepath: str):
 
@@ -214,10 +226,10 @@ if __name__ == "__main__":
     logging.basicConfig(filename='imagetogogglesheet.log', 
                         encoding='utf-8', level=logging.INFO)
 
-    print(f"args length = {len(sys.argv)}")
+    #print(f"args length = {len(sys.argv)}")
 
-    print(f"Name of the script      : {sys.argv[0]=}")
-    print(f"Arguments of the script : {sys.argv[1:]=}")
+    #print(f"Name of the script      : {sys.argv[0]=}")
+    #print(f"Arguments of the script : {sys.argv[1:]=}")
 
     if(len(sys.argv) <= 1):
         print("Please pass the file name")
