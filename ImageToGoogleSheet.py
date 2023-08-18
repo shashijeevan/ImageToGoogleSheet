@@ -5,6 +5,7 @@
 # part of this package.
 
 import os
+import datetime as dt
 import sys
 import json
 import traceback
@@ -22,6 +23,7 @@ class ImageToGoogleSheet:
 
     def __init__(self):
         self.imagepath = ""
+        self.sheetName = ""
         self.sheetID = 0
         self.SQUAREWIDTH = 21
         self.SPREADSHEET_ID = os.environ['SPREADSHEETID']
@@ -89,6 +91,12 @@ class ImageToGoogleSheet:
 
         service = self.__SetupProxy(creds, UseProxy)
 
+        #Simple random sheet name generator
+        #Month WeekdayName interger part of timestamp
+        now = dt.datetime.now()
+        self.sheetName = f"{now:%b} {now:%a} {int(now.timestamp())}" 
+        print(f"Sheet Name: {self.sheetName}")
+
         #Creating as new Sheet in the SpreadSheet. 
         # Using the Image dimensions as the Sheet dimensions.
         requests = []
@@ -97,7 +105,7 @@ class ImageToGoogleSheet:
             {
                 "addSheet": {
                     "properties": {
-                        "title": "New Sheet 1408",
+                        "title": self.sheetName,
                         "gridProperties": {
                             "rowCount": self.height,
                             "columnCount": self.width
