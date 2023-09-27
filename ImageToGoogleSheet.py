@@ -11,9 +11,9 @@ import json
 import traceback
 import logging
 import numpy as np
+import httplib2
 from googleapiclient.discovery import build
 from google.oauth2  import service_account
-import httplib2
 import google_auth_httplib2
 from pprint import pprint
 from PIL import Image
