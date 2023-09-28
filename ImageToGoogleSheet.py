@@ -54,9 +54,10 @@ class ImageToGoogleSheet:
 
         '''This private method loads the image and 
         creates an array of pixel RGB values'''
-
+        
+        print("---------------------")
         print("Loading Image " + self.imagepath)
-
+        
         #Opening the image and checking image properties
         inputimage = Image.open(self.imagepath)
 
@@ -91,6 +92,9 @@ class ImageToGoogleSheet:
 
         service = self.__SetupProxy(creds, UseProxy)
 
+        print("---------------------")
+        print("Generating new Sheet name")
+
         #Simple random sheet name generator
         #Month WeekdayName interger part of timestamp
         now = dt.datetime.now()
@@ -98,7 +102,7 @@ class ImageToGoogleSheet:
         print(f"Sheet Name: {self.sheetName}")
 
         #Creating as new Sheet in the SpreadSheet. 
-        # Using the Image dimensions as the Sheet dimensions.
+        #Using the Image dimensions as the Sheet dimensions.
         requests = []
  
         requests.append(
@@ -124,8 +128,6 @@ class ImageToGoogleSheet:
         addsheetresponse = service.spreadsheets().batchUpdate(
                                     spreadsheetId=self.SPREADSHEET_ID, 
                                     body=body).execute()
-
-        #pprint(addsheetresponse)
 
         print("Added new Sheet")
 
@@ -159,8 +161,6 @@ class ImageToGoogleSheet:
                                     spreadsheetId=self.SPREADSHEET_ID, 
                                     body=body).execute()
 
-        #pprint(setwidthresponse)
-
         print("Setup of square cell is complete")
 
     def __SaveImageArrayToGSheet(self):
@@ -175,30 +175,28 @@ class ImageToGoogleSheet:
         UseProxy = False
 
         service = self.__SetupProxy(creds, UseProxy)
-
+        
+        print("---------------------")
+        
         #Generating the JSON using the Image data
-
         print("Building the request JSON from image pixel data")
 
         requestSON = RequestBuilder.ImageArrayToJSON(self.sheetID, self.image_array, 
                                                      self.width, self.height)
 
         print("JSON generation completed")
-        #print(requestSON)
 
         logging.info(requestSON)
 
-        #We need build JSON object from string as API takes JSON object
+        #We need build Python dictionary from JSON string as API takes JSON object
         request = json.loads(requestSON)
 
-        print("Executing batch request")
+        print("Submitting batch update request")
         
         response = service.spreadsheets().batchUpdate(spreadsheetId=self.SPREADSHEET_ID,
                                                       body=request).execute()
 
-        print("Executed batch update")
-
-        #print(response)
+        print("Submitted batch update successfully")
 
     def SaveImageToGoogleSheet(self, imagepath: str):
 
@@ -233,11 +231,6 @@ if __name__ == "__main__":
 
     logging.basicConfig(filename='imagetogogglesheet.log', 
                         encoding='utf-8', level=logging.INFO)
-
-    #print(f"args length = {len(sys.argv)}")
-
-    #print(f"Name of the script      : {sys.argv[0]=}")
-    #print(f"Arguments of the script : {sys.argv[1:]=}")
 
     if(len(sys.argv) <= 1):
         print("Please pass the file name")

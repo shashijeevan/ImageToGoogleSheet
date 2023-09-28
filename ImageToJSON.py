@@ -13,6 +13,10 @@ from RequestDataClasses import Request
 from RequestDataClasses import UpdateCells
 from RequestDataClasses import UserEnteredFormat
 import logging
+from tqdm import tqdm_notebook as tqdm
+from tqdm import trange
+import colorama
+from colorama import Fore
 
 class RequestBuilder:
 
@@ -22,15 +26,16 @@ class RequestBuilder:
 
         logging.info("Array dimension = %s", image_array.shape)
 
-        #print("Width = " + width + ", Height = " + height)
+        print(f"Width = {width}, Height = {height}")
 
         range1 = Range(sheet_id=SheetID, start_row_index=0, end_row_index=height+1, 
                        start_column_index=0, end_column_index=width+1)
 
         rows = []
 
-        for rowid in range(0, height):
-            
+        for rowid in trange(0, height, desc = "Rows", position = 0, unit = "Rows",
+        bar_format="{l_bar}%s{bar}%s{r_bar}" % (Fore.BLUE, Fore.RESET)):
+                
             columns = []
 
             for columnid in range(0, width):
@@ -55,22 +60,21 @@ class RequestBuilder:
 
                 columns.append(myvalue)
 
-            #print("Adding row = {}".format(rowid))
-
             logging.info("Adding row = %d", rowid)
 
             newrow = Row(values=columns)
+            
             logging.info(newrow.to_json())
 
             rows.append(newrow)
 
         cells = UpdateCellsClass(range=range1, rows=rows, fields='UserEnteredFormat')
-                            
-        #print(rows)
 
         request = Request(update_cells=cells)
 
         updaterequest = UpdateCells(requests=[request])
+
+        print("Converting to JSON")
 
         result = updaterequest.to_json()
 
